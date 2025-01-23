@@ -1,0 +1,15 @@
+_target_: src.datasets.modalities.char_dataset.CharacterDataset
+
+name: char
+dataset_dir: ${dataset.dataset_dir}
+num_cams: ${dataset.num_cams}
+num_raw_feats: 3
+num_frequencies: 10
+min_freq: 0
+max_freq: 4
+num_encoding: 3 # ${eval:'2 * ${dataset.char.num_frequencies} * ${dataset.char.num_raw_feats}'}
+sequential: ${diffuser.network.module.cond_sequential}
+num_feats: ${eval:'${dataset.char.num_encoding} if ${dataset.char.sequential} else ${dataset.num_cams} * ${dataset.char.num_encoding}'}
+standardize: ${dataset.trajectory.standardize}
+standardization: ${dataset.standardization}
+load_vertices: ${diffuser.do_projection}

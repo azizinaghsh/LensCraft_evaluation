@@ -1,0 +1,1 @@
+As the character moves right, the camera trucks left to maintain a consistent framing.

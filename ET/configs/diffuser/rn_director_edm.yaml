@@ -1,0 +1,24 @@
+_target_: src.diffuser.Diffuser
+
+defaults:
+  - _self_
+  - network: rn_director
+
+guidance_weight: 1.4
+edm2_normalization: true
+
+# EMA
+ema_kwargs:
+  beta: 0.9999
+  update_every: 1
+
+# Sampling
+sampling_kwargs:
+  num_steps: 10
+  sigma_min: 0.002
+  sigma_max: 80
+  rho: 40
+  S_churn: 0
+  S_min: 0
+  S_max: inf
+  S_noise: 1

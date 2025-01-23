@@ -1,0 +1,7 @@
+_target_: src.models.networks.RnEDMPrecond
+
+defaults:
+  - module: ca_director
+
+name: rn_director
+sigma_data: 0.5

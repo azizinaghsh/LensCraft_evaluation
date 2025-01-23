@@ -1,0 +1,17 @@
+defaults:
+  - dataset: traj+caption+char
+  - diffuser: rn_director_edm
+  - compnode: gpu
+  - _self_
+
+dataset:
+  char:
+    load_vertices: true
+
+checkpoint_path: 'ET/checkpoints/ca-mixed-e449.ckpt'
+batch_size: 128
+data_dir: ET/data
+
+hydra:
+  run:
+    dir: ./${results_dir}/${xp_name}/${timestamp}

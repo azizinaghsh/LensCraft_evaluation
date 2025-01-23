@@ -1,0 +1,1 @@
+While the character moves to the right, the camera trucks right alongside them. Once the character comes to a stop, the camera remains static.
