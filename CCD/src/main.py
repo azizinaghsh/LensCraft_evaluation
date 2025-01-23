@@ -314,9 +314,9 @@ def set_seed(seed: int):
         torch.cuda.manual_seed_all(seed)
 
 
-def gen(text: str, seed: int):
+def gen_batch(texts: list, seed: int):
     set_seed(seed)
-    
+
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
     mean_std_path = os.path.join(script_dir, "..", "checkpoints", "Mean_Std.npy")
@@ -351,10 +351,6 @@ def gen(text: str, seed: int):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model, preprocess = clip.load("ViT-B/32", device=device)
 
-    #text = ["The camera pans to the character. The camera switches from right front view to right back view. The character is at the middle center of the screen. The camera shoots at close shot."]
-
-    result = []
-
     def smooth(x, winds=10, T=4):
         if T == 0:
             return x
@@ -364,25 +360,26 @@ def gen(text: str, seed: int):
         return smooth(n_x, T=T - 1)
 
     with torch.no_grad():
-        c = clip.tokenize(text, truncate=True).to(device)
+        # Tokenize and encode all text inputs in parallel
+        c = clip.tokenize(texts, truncate=True).to(device)
         c = model.encode_text(c)
 
-        sample = ddpm.sample(10, c, (300, n_feature), device, guide_w=2.0)
-        sample = sample.detach().cpu().numpy()
+        # Generate samples for the entire batch in parallel
+        batch_size = len(texts)
+        samples = ddpm.sample(batch_size, c, (300, n_feature), device, guide_w=2.0)  # Generate samples for all texts
+        samples = samples.detach().cpu().numpy()
 
-        for j in range(len(sample)):
-            s = smooth(sample[j] * Std[None, :] + Mean[None, :])
-            result.append(s)
-        return result
-            # with open("gen/{}.txt".format(j), "w") as f:
-            #     for i in range(len(s)):
-            #         txt = ""
-            #         for k in range(5):
-            #             txt += str(s[i][k]) + " "
-            #         f.write(txt+"\n")
+        results = []
+        for i in range(batch_size):
+            s = smooth(samples[i] * Std[None, :] + Mean[None, :])  # Smooth each sample
+            results.append(s)
+
+    return results
 
 
-def generate_CCD_sample(text: str, seed : int):
-    return gen(text, seed)
+
+
+def generate_CCD_sample(texts: list, seed : int):
+    return gen_batch(texts, seed)
 
 

@@ -34,7 +34,7 @@ def generate_ccd(
     character_position: list,
 ) -> Dict[str, Any]:
     
-    results = generate_CCD_sample(prompt, seed)
+    results = generate_CCD_sample([prompt], seed)
 
     ccd_transform_to_7DoF(
         traj=np.array(results)
