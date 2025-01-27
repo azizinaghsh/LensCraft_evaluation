@@ -75,36 +75,40 @@ def encode_text(
 
 
 def get_batch(
-    prompts: List[str],
+    prompt: str,
+    sample_id: str,
     character_position: str,
     clip_model: clip.model.CLIP,
     dataset: MultimodalDataset,
+    seq_feat: bool,
     device: torch.device,
 ) -> Dict[str, Any]:
-    """
-    Get a batched input for multiple prompts.
-    """
-    # Prepare batch
-    raw_batch = [dataset[0] for _ in range(len(prompts))]
+    
+    # Get base batch
+    sample_index = dataset.root_filenames.index(sample_id)
+    raw_batch = dataset[sample_index]
     batch = collate_fn([to_device(raw_batch, device)])
 
-    # Encode batch of texts
-    caption_seq, caption_tokens = encode_text(prompts, clip_model, None, device)
-
-    # Process batch in the same way as before
-    caption_feat = caption_seq
-    caption_feat = F.pad(caption_feat, (0, 0, 0, 77 - caption_feat.shape[0]))
-    caption_feat = caption_feat.unsqueeze(0).permute(0, 2, 1)
+    # Encode text
+    caption_seq, caption_tokens = encode_text([prompt], clip_model, None, device)
+    print(caption_seq[0].device)
+    
+    if seq_feat:
+        caption_feat = caption_seq[0]
+        caption_feat = F.pad(caption_feat, (0, 0, 0, 77 - caption_feat.shape[0]))
+        caption_feat = caption_feat.unsqueeze(0).permute(0, 2, 1)
+    else:
+        caption_feat = caption_tokens
 
     # Update batch
-    batch["caption_raw"] = prompts
+    batch["caption_raw"] = [prompt]
     batch["caption_feat"] = caption_feat
 
-    # Convert character_position to tensor
     character_position = torch.tensor(
         [float(coord) for coord in character_position.strip("[]").split(",")],
         device=device,
     )
+
     batch['char_feat'] = character_position.unsqueeze(-1).repeat(1, 1, 300)
     batch['char_raw']['char_raw_feat'] = character_position.unsqueeze(-1).repeat(1, 1, 300)
     batch['char_raw']['char_vertices'] = torch.zeros_like(batch['char_raw']['char_vertices'])
