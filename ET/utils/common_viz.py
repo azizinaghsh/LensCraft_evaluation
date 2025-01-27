@@ -116,10 +116,14 @@ def get_batch(
 def init(
     config_name: str,
 ) -> Tuple[Diffuser, clip.model.CLIP, MultimodalDataset]:
+    # Initialize Hydra configuration
     with initialize(version_base="1.3", config_path="../configs"):
         config = compose(config_name=config_name)
 
-    OmegaConf.register_new_resolver("eval", eval)
+    # Unregister and re-register the 'eval' resolver
+    if OmegaConf.has_resolver("eval"):
+        OmegaConf.clear_resolver("eval")  # Unregister existing resolver
+    OmegaConf.register_new_resolver("eval", eval)  # Re-register the resolver
 
     # Initialize model
     diffuser = instantiate(config.diffuser)
@@ -142,3 +146,4 @@ def init(
     diffuser.v_get_matrix = dataset.get_matrix
 
     return diffuser, clip_model, dataset, config.compnode.device
+
