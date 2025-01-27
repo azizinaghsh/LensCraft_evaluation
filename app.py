@@ -14,11 +14,11 @@ import clip
 import numpy as np
 import torch
 
-from ET.utils.common_viz import init, get_batch
-from ET.utils.random_utils import set_random_seed
-from ET.src.diffuser import Diffuser
-from ET.src.datasets.multimodal_dataset import MultimodalDataset
-from ET.utils.transform import resize_trajectory, trajectory_to_7dof
+    from ET.utils.common_viz import init, get_batch
+    from ET.utils.random_utils import set_random_seed
+    from ET.src.diffuser import Diffuser
+    from ET.src.datasets.multimodal_dataset import MultimodalDataset
+    from ET.utils.transform import resize_trajectory, trajectory_to_7dof
 
 def generate_batch(
     prompts: List[str],
@@ -71,16 +71,3 @@ def generate_batch(
         results.append({"traj_7dof": traj_7dof, "char_traj": char_traj})
 
     return results
-
-
-
-
-# ------------------------------------------------------------------------------------- #
-
-diffuser, clip_model, dataset, device = init("config")
-
-generate_batch(
-dataset=dataset,
-device=device,
-diffuser=diffuser,
-clip_model=clip_model)
