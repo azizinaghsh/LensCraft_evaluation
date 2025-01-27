@@ -1,6 +1,5 @@
 from typing import Any, Dict, List
 
-from src.metrics.modules.caption import CaptionMetrics
 from src.metrics.modules.fcd import FrechetCLaTrDistance
 from src.metrics.modules.prdc import ManifoldMetrics
 from src.metrics.modules.clatr_score import CLaTrScore
@@ -10,16 +9,11 @@ class MetricCallback:
     def __init__(
         self,
         num_cams: int,
-        num_classes: int,
         device: str,
     ):
         self.num_cams = num_cams
 
-        self.caption_metrics = {
-            "train": CaptionMetrics(num_classes),
-            "val": CaptionMetrics(num_classes),
-            "test": CaptionMetrics(num_classes),
-        }
+
         self.clatr_fd = {
             "train": FrechetCLaTrDistance(),
             "val": FrechetCLaTrDistance(),
@@ -45,19 +39,6 @@ class MetricCallback:
             self.clatr_prdc[stage].to(device)
             self.clatr_score[stage].to(device)
 
-    def update_caption_metrics(
-        self, stage: str, pred, ref: List[int], mask
-    ):
-        self.caption_metrics[stage].update(pred, ref, mask)
-
-    def compute_caption_metrics(self, stage: str) -> Dict[str, Any]:
-        precision, recall, fscore = self.caption_metrics[stage].compute()
-        self.caption_metrics[stage].reset()
-        return {
-            "captions/precision": precision,
-            "captions/recall": recall,
-            "captions/fscore": fscore,
-        }
 
     def update_clatr_metrics(self, stage, pred, ref, text):
         self.clatr_score[stage].update(pred, text)
