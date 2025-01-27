@@ -22,10 +22,7 @@ def resize_trajectory(trajectories, target_frames=30):
         
         # Interpolate positions
         positions = trajectories[i][:, :3, 3]
-        if target_frames > T:
-            resized_positions = np.interp(target_times, times, positions)
-        else:
-            resized_positions = resample(positions, target_frames, axis=0)
+        resized_positions = resample(positions, target_frames, axis=0)
 
         # Interpolate rotations using Slerp
         rotation_matrices = trajectories[i][:, :3, :3]
