@@ -85,7 +85,7 @@ def get_batch(
     Get a batched input for multiple prompts.
     """
     # Prepare batch
-    raw_batch = [dataset[dataset.root_filenames.index(sample_id)] for sample_id in range(len(prompts))]
+    raw_batch = [dataset[0] for _ in range(len(prompts))]
     batch = collate_fn([to_device(raw_batch, device)])
 
     # Encode batch of texts
