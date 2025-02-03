@@ -1,8 +1,8 @@
 from typing import Any, Dict, List
 
-from src.metrics.modules.fcd import FrechetCLaTrDistance
-from src.metrics.modules.prdc import ManifoldMetrics
-from src.metrics.modules.clatr_score import CLaTrScore
+from metrics.modules.fcd import FrechetCLaTrDistance
+from metrics.modules.prdc import ManifoldMetrics
+from metrics.modules.clatr_score import CLaTrScore
 
 
 class MetricCallback:
