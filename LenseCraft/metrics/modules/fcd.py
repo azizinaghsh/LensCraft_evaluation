@@ -84,6 +84,8 @@ class FrechetCLaTrDistance(Metric):
     def update(self, real_features: Tensor, fake_features: Tensor):
         """ Update states with new batches of features. """
 
+        print(f"Real Features shape: {real_features.shape}")
+        print(f"Fake Features shape: {fake_features.shape}")
         self.orig_dtype = real_features.dtype
 
         self.real_features_sum += real_features.sum(dim=0)
