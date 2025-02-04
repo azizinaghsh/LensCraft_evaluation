@@ -53,6 +53,7 @@ class ManifoldMetrics(Metric):
         nearest_k: int
     ) -> Tuple[Tensor, Tensor, Tensor, Tensor]:
         """Compute PRDC metrics for a single batch."""
+        
         real_nn_distances = self._compute_nn_distances(
             real_features, nearest_k)
         fake_nn_distances = self._compute_nn_distances(
@@ -81,6 +82,20 @@ class ManifoldMetrics(Metric):
             .to(float)
             .mean()
         )
+
+        # Debugging density computation
+        density_raw = (distance_real_fake < real_nn_distances.unsqueeze(1)).sum(axis=0).to(float)
+
+        print("=== DEBUG: Density Calculation ===")
+        print(f"Max count before normalization (should be ≤ k={nearest_k}): {density_raw.max().item()}")
+        print(f"Min count before normalization: {density_raw.min().item()}")
+        print(f"Mean count before normalization: {density_raw.mean().item()}")
+
+        density_scaled = (1.0 / float(nearest_k)) * density_raw.mean()
+        print(f"Density before rounding: {density_scaled.item()}")
+        print(f"Density after rounding: {density_scaled.round(6).item()}")
+        print("==================================")
+
 
         return precision, recall, density, coverage
 
