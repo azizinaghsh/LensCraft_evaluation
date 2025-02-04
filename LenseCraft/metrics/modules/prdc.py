@@ -93,7 +93,7 @@ class ManifoldMetrics(Metric):
 
         density_scaled = (1.0 / float(nearest_k)) * density_raw.mean()
         print(f"Density before rounding: {density_scaled.item()}")
-        print(f"Density after rounding: {density_scaled.round(6).item()}")
+        print(f"Density after rounding: {torch.round(density_scaled * 1e6) / 1e6}")
         print("==================================")
 
 
