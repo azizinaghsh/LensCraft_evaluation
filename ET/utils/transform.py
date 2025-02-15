@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.spatial.transform import Rotation as R
-from scipy.signal import resample
+from scipy.interpolate import interp1d
 
 from scipy.spatial.transform import Slerp
 
@@ -20,9 +20,10 @@ def resize_trajectory(trajectories, target_frames=30):
         times = np.linspace(0, 1, T)  # Original times
         target_times = np.linspace(0, 1, target_frames)  # Target times
         
-        # Interpolate positions
-        positions = trajectories[i][:, :3, 3]
-        resized_positions = resample(positions, target_frames, axis=0)
+        positions = trajectories[i][:, :3, 3]  # Extract position components
+        interpolator = interp1d(times, positions, axis=0, kind='linear', fill_value='extrapolate')
+        resized_positions = interpolator(target_times)  # Interpolated positions
+
 
         # Interpolate rotations using Slerp
         rotation_matrices = trajectories[i][:, :3, :3]
@@ -52,12 +53,12 @@ def trajectory_to_7dof(trajectories):
     """
     N, T, _, _ = trajectories.shape
     result = np.zeros((N, T, 7))  # Output with shape [N, T, 7]
-    
+
+
     for i in range(N):
         for t in range(T):
             # Extract position (translation vector)
-            position = trajectories[i][t, 3, :3]
-            
+            position = trajectories[i][t, :3, 3]
             # Convert rotation matrix to Euler angles (pitch, yaw, roll)
             rotation_matrix = trajectories[i][t, :3, :3]
             rotation = R.from_matrix(rotation_matrix)
@@ -80,8 +81,10 @@ def transform_trajectories(trajectories, target_frames=30):
     :return: Transformed camera trajectories of shape [N, 30, 7].
     """
     resized_trajectories = resize_trajectory(trajectories, target_frames)
-    print (resized_trajectories)
-    return trajectory_to_7dof(resized_trajectories)
+    pos = resized_trajectories[0, :, :3, 3]
+    t = trajectory_to_7dof(resized_trajectories)
+    
+    return t
 
 
 def generate_valid_transformation_matrix():
