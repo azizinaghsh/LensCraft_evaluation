@@ -80,6 +80,7 @@ def transform_trajectories(trajectories, target_frames=30):
     :return: Transformed camera trajectories of shape [N, 30, 7].
     """
     resized_trajectories = resize_trajectory(trajectories, target_frames)
+    print (resized_trajectories)
     return trajectory_to_7dof(resized_trajectories)
 
 
