@@ -75,7 +75,7 @@ def ccd_transform_to_7DoF(traj):
 
         # Combine: (apply y-rotation), then the base look-at rotation, then x-rotation
         base_rotation = transform.from_matrix(rotation_matrix)
-        rotation_combined = rotation_y * base_rotation * rotation_x
+        rotation_combined = base_rotation * rotation_y * rotation_x
 
         # Convert the final rotation to Euler angles (XYZ order, in degrees)
         euler_angles = rotation_combined.as_euler('xyz', degrees=True)
