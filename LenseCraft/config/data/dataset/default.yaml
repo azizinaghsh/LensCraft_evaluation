@@ -3,7 +3,7 @@ _feature_dim: 7
 
 module:
   _target_: data.simulation.dataset.SimulationDataset
-  data_path: /kaggle/input/lenscraft-dynamic-sample
+  data_path: /kaggle/input/lenscraft-dynamic-sample/LensCraft_dynamic_sample/LensCraft_dynamic_sample
   embedding_dim: ${clip.latent_dim}
   clip_embeddings:
     _target_: data.simulation.init_embeddings.initialize_all_clip_embeddings
